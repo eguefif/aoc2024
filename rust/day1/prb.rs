@@ -1,89 +1,32 @@
-use std::{collections::HashMap, time::Instant};
+use std::collections::HashMap;
 
 #[allow(unused_assignments)]
 
 fn main() {
     let input = get_input();
-    let repeat = 1000;
-
-    let mut min = 10000;
-    let mut tmp = 0;
-    for _ in 0..repeat {
-        tmp = part2_fold_exp(input.clone());
-        if tmp < min {
-            min = tmp;
-        }
-    }
-    println!("exp: {}", min);
-
-    tmp = 0;
-    min = 10000;
-
-    for _ in 0..repeat {
-        tmp = part2_fold(input.clone());
-        if tmp < min {
-            min = tmp;
-        }
-    }
-    println!("fold: {}", min);
-
-    tmp = 0;
-    min = 10000;
-    for _ in 0..repeat {
-        tmp = part2_sum(input.clone());
-        if tmp < min {
-            min = tmp;
-        }
-    }
-    println!("sum: {}", min);
+    println!("Part1: {}", part1(input.clone()));
+    println!("Part2: {}", part2(input.clone()));
 }
 
-fn part2_fold_exp(input: (Vec<i32>, Vec<i32>)) -> u128 {
+fn part1(input: (Vec<i32>, Vec<i32>)) -> i32 {
+    input
+        .0
+        .iter()
+        .zip(input.1)
+        .fold(0, |x, (v1, v2)| x + (v1 - v2).abs())
+}
+
+fn part2(input: (Vec<i32>, Vec<i32>)) -> i32 {
     let n = input.0.len();
-    let start = Instant::now();
 
     let mut freqs = HashMap::with_capacity(n);
     for n in input.1.iter() {
-        *freqs.entry(n).or_insert(0) += 1;
+        freqs.entry(n).and_modify(|x| *x += 1).or_insert(1);
     }
     input
         .0
         .into_iter()
-        .fold(0, |acc, v| acc + v * freqs.get(&v).unwrap_or(&0));
-
-    start.elapsed().as_micros()
-}
-
-fn part2_fold(input: (Vec<i32>, Vec<i32>)) -> u128 {
-    let start = Instant::now();
-    let freqs: HashMap<i32, i32> = input.1.into_iter().fold(HashMap::new(), |mut h, n| {
-        let entry = h.entry(n).or_default();
-        *entry += 1;
-        h
-    });
-
-    input
-        .0
-        .into_iter()
-        .fold(0i32, |s, n| s + n * *freqs.get(&n).unwrap_or(&0));
-
-    start.elapsed().as_micros()
-}
-
-fn part2_sum(input: (Vec<i32>, Vec<i32>)) -> u128 {
-    let n = input.0.len();
-    let start = Instant::now();
-    let mut counter = HashMap::with_capacity(n);
-    for n in input.1.iter() {
-        *counter.entry(n).or_insert(0) += 1;
-    }
-
-    input
-        .1
-        .iter()
-        .map(|n| n * counter.get(n).unwrap_or(&0))
-        .sum::<i32>() as usize;
-    start.elapsed().as_micros()
+        .fold(0, |acc, v| acc + v * freqs.get(&v).unwrap_or(&0))
 }
 
 fn get_input() -> (Vec<i32>, Vec<i32>) {
