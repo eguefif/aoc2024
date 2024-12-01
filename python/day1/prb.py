@@ -1,6 +1,6 @@
 left = []
 right = []
-with open("./input", "r") as f:
+with open("./../../inputs/d1-input", "r") as f:
     lines = f.readlines()
     for line in lines:
         v1, v2 = line.strip().split("   ")

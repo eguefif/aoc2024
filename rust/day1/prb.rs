@@ -87,7 +87,7 @@ fn part2_sum(input: (Vec<i32>, Vec<i32>)) -> u128 {
 }
 
 fn get_input() -> (Vec<i32>, Vec<i32>) {
-    let content = include_str!("./input");
+    let content = include_str!("../../inputs/d1");
     let mut array1: Vec<i32> = vec![];
     let mut array2: Vec<i32> = vec![];
 
