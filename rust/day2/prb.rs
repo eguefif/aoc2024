@@ -4,12 +4,18 @@ fn main() {
     println!("{:?}", part2(input.clone()));
 }
 
-fn part1(input: Vec<Vec<i32>>) -> i32 {
-    input
-        .into_iter()
-        .filter(|row| is_row_safe_p1(row))
-        .collect::<Vec<_>>()
-        .len() as i32
+fn part1(input: Vec<Vec<i32>>) -> usize {
+    input.into_iter().filter(|row| is_row_safe_p1(row)).count()
+}
+
+fn is_row_safe_p1(row: &Vec<i32>) -> bool {
+    let d = row
+        .iter()
+        .zip(row.iter().skip(1))
+        .map(|(a, b)| a - b)
+        .collect::<Vec<i32>>();
+
+    d.iter().all(|x| *x >= 1 && *x <= 3) || d.iter().all(|x| *x <= -1 && *x >= -3)
 }
 
 fn part2(input: Vec<Vec<i32>>) -> i32 {
@@ -31,10 +37,6 @@ fn is_row_safe(roww: &Vec<i32>) -> bool {
         }
     }
     return false;
-}
-
-fn is_row_safe_p1(row: &Vec<i32>) -> bool {
-    (row.iter().is_sorted() || row.iter().rev().is_sorted()) && check(&row) && row.len() > 0
 }
 
 fn check(row: &Vec<i32>) -> bool {
@@ -63,4 +65,23 @@ fn get_input() -> Vec<Vec<i32>> {
                 .collect::<Vec<i32>>()
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_d2p1() {
+        let input = get_input();
+        let res = part1(input);
+        assert_eq!(299, res)
+    }
+
+    #[test]
+    fn it_d2p2() {
+        let input = get_input();
+        let res = part2(input);
+        assert_eq!(364, res)
+    }
 }
