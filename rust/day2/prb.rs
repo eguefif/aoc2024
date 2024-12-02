@@ -55,15 +55,12 @@ fn get_input() -> Vec<Vec<i32>> {
     let content = include_str!("../../inputs/d2");
     //let content = include_str!("./exemple");
 
-    let mut retval = vec![];
-    content.lines().for_each(|line| {
-        let mut v = vec![];
-        let split = line.split_ascii_whitespace();
-        for s in split {
-            v.push(s.parse::<i32>().unwrap());
-        }
-        retval.push(v);
-    });
-
-    retval
+    content
+        .lines()
+        .map(|line| {
+            line.split_ascii_whitespace()
+                .map(|item| item.parse::<i32>().unwrap())
+                .collect::<Vec<i32>>()
+        })
+        .collect()
 }
