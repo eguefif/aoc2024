@@ -21,16 +21,21 @@ fn part1(input: &str) -> usize {
 
 fn part2(input: &str) -> usize {
     let re = Regex::new(r"(don't\(\))|(mul\([0-9]+,[0-9]+\))|(do\(\))").unwrap();
-    let re_dont = Regex::new(r"don't\(\)");
-    let re_do = Regex::new(r"do\(\)");
+    let re_mul = Regex::new(r"mul\(([0-9]+),([0-9]+)\)").unwrap();
 
     let mut acc = 0;
     let mut flag = true;
-    for (token, [n]) in re.captures_iter(input).map(|v| v.extract()) {
-        if Some(caps) = re_dont.captures(token) {
+    for (token, [_]) in re.captures_iter(input).map(|v| v.extract()) {
+        if token.matches("don't()").collect::<Vec<&str>>().len() > 0 {
             flag = false;
-        } else Some(caps) = re_do.captures(token) {
+        } else if token.matches("do()").collect::<Vec<&str>>().len() > 0 {
             flag = true;
+        } else if flag == true && token.matches("mul").collect::<Vec<&str>>().len() > 0 {
+            let caps = re_mul.captures(token).unwrap();
+            acc += caps.get(1).unwrap().as_str().parse::<usize>().unwrap()
+                * caps.get(2).unwrap().as_str().parse::<usize>().unwrap();
+        } else {
+            continue;
         }
     }
 
@@ -43,15 +48,15 @@ mod test {
 
     #[test]
     fn exemple() {
-        let ex = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
-        let res = part1(ex);
-        assert_eq!(161, res)
+        let input = include_str!("../../inputs/d3");
+        let res = part1(input);
+        assert_eq!(163931492, res)
     }
 
     #[test]
     fn exemple2() {
-        let ex = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
-        let res = part2(ex);
-        assert_eq!(48, res)
+        let input = include_str!("../../inputs/d3");
+        let res = part2(input);
+        assert_eq!(76911921, res)
     }
 }
