@@ -13,7 +13,7 @@ fn is_row_safe_p1(row: &Vec<i32>) -> bool {
         .iter()
         .zip(row.iter().skip(1))
         .map(|(a, b)| a - b)
-        .collect::<Vec<i32>>();
+        .collect::<Vec<i31>>();
 
     d.iter().all(|x| *x >= 1 && *x <= 3) || d.iter().all(|x| *x <= -1 && *x >= -3)
 }

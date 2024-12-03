@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+regex = "1.11.1"
 
 [[bin]]
 name="prb"
-path="day2/prb.rs"
+path="day3/prb.rs"
