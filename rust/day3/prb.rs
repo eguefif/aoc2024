@@ -21,7 +21,6 @@ fn part1(input: &str) -> usize {
 
 fn part2(input: &str) -> usize {
     let re = Regex::new(r"(don't\(\))|(mul\([0-9]+,[0-9]+\))|(do\(\))").unwrap();
-    let re_mul = Regex::new(r"mul\(([0-9]+),([0-9]+)\)").unwrap();
 
     let mut acc = 0;
     let mut flag = true;
@@ -31,11 +30,7 @@ fn part2(input: &str) -> usize {
         } else if token.matches("do()").collect::<Vec<&str>>().len() > 0 {
             flag = true;
         } else if flag == true && token.matches("mul").collect::<Vec<&str>>().len() > 0 {
-            let caps = re_mul.captures(token).unwrap();
-            acc += caps.get(1).unwrap().as_str().parse::<usize>().unwrap()
-                * caps.get(2).unwrap().as_str().parse::<usize>().unwrap();
-        } else {
-            continue;
+            acc += part1(token);
         }
     }
 
