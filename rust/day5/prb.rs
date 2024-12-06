@@ -18,16 +18,7 @@ fn part1(input: Vec<Vec<u32>>, rules: Vec<(u32, u32)>) -> u32 {
 fn is_sorted(row: &Vec<u32>, rules: &Vec<(u32, u32)>) -> bool {
     row.into_iter()
         .zip(row[1..row.len()].iter())
-        .all(|(a, b)| check(*a, *b, &rules))
-}
-
-fn check(a: u32, b: u32, rules: &Vec<(u32, u32)>) -> bool {
-    for rule in rules.iter() {
-        if rule.0 == b && rule.1 == a {
-            return false;
-        }
-    }
-    return true;
+        .all(|(a, b)| rules.iter().any(|(x, y)| *x == *a && *y == *b))
 }
 
 fn part2(input: Vec<Vec<u32>>, rules: Vec<(u32, u32)>) -> u32 {
@@ -42,7 +33,7 @@ fn part2(input: Vec<Vec<u32>>, rules: Vec<(u32, u32)>) -> u32 {
 fn sort_row(row: &mut Vec<u32>, rules: &Vec<(u32, u32)>) -> Vec<u32> {
     for i in 0..row.len() {
         for j in (i + 1)..row.len() {
-            if !check(row[i], row[j], &rules) {
+            if rules.iter().any(|(x, y)| *x == row[i] && *y == row[j]) {
                 let tmp = row[i];
                 row[i] = row[j];
                 row[j] = tmp;
