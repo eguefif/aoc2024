@@ -7,5 +7,5 @@ edition = "2021"
 regex = "1.11.1"
 
 [[bin]]
-name="prb"
-path="day1/day7.rs"
+name="day7"
+path="day7.rs"
