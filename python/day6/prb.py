@@ -1,6 +1,6 @@
 import collections
 
-with open("../../inputs/exemple", "r") as f:
+with open("../../inputs/d6", "r") as f:
     content = f.readlines()
 
 ans = 0
@@ -90,38 +90,17 @@ def count_objects(inp):
     return acc
 
 
-def is_collision(guard, new_direction, inp):
-    if new_direction[1] != 0:
-        for y in range(guard[1], len(inp)):
-            if inp[y][guard[0]] == "#":
-                return guard[0], y
-    else:
-        for x in range(guard[1], len(inp[0])):
-            if inp[guard[1]][x] == "#":
-                return x, guard[1]
-    return -1, -1
+def is_stuck(guard, direction, inp):
+    saved_guard = guard.copy()
+    saved_direction = direction
 
-
-def check_square(x_b, y_b, direction, guard_b, inp):
-    count = 0
-    print("direction: ", direction)
-    x = x_b - direction[0]
-    y = y_b - direction[1]
-    guard = [x, y]
-    direction = turn(direction)
     while not is_moving_out(guard, inp, direction):
-        if count == 2:
-            if guard == guard_b:
-                return True
-            elif next_move_possible(guard, inp, direction, False):
-                guard = move(guard, direction)
-            else:
-                return False
-        elif next_move_possible(guard, inp, direction, False):
+        if next_move_possible(guard, inp, direction, False):
             guard = move(guard, direction)
         else:
-            count += 1
             direction = turn(direction)
+        if saved_guard == guard and saved_direction == direction:
+            return True
     return False
 
 
@@ -132,13 +111,11 @@ def check_trap(guard, direction, inp):
             return
     except Exception:
         return
-    new_direction = turn(direction)
-    x, y = is_collision(guard, new_direction, inp)
-    if x == -1:
-        return
-    print(x, y)
-    if check_square(x, y, new_direction, guard, inp):
-        inp[trap[0]][trap[1]]
+    save = inp[trap[1]][trap[0]]
+    if not is_stuck(guard.copy(), turn(direction), inp):
+        inp[trap[1]][trap[0]] = save
+    else:
+        inp[trap[1]][trap[0]] = "O"
 
 
 def part2(inp):
@@ -146,11 +123,11 @@ def part2(inp):
     guard = get_guard(inp)
 
     while not is_moving_out(guard, inp, direction):
+        check_trap(guard, direction, inp)
         if next_move_possible(guard, inp, direction, False):
             guard = move(guard, direction)
         else:
             direction = turn(direction)
-            check_trap(guard, direction, inp)
 
     print_inp(inp)
     return count_objects(inp)
