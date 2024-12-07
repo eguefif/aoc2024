@@ -1,6 +1,6 @@
 import collections
 
-with open("../../inputs/d6", "r") as f:
+with open("../../inputs/exemple", "r") as f:
     content = f.readlines()
 
 ans = 0

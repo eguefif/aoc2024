@@ -7,26 +7,48 @@ fn part2(input: &mut Vec<Vec<char>>) -> u32 {
     let mut guard = get_guard(input);
     let mut direction = (0, -1);
     while !going_outside(guard, input, direction) {
+        check(&mut guard.clone(), input, &mut direction.clone());
         if can_move(guard, input, direction) {
             guard = walk(guard, direction);
-            input[guard.1 as usize][guard.0 as usize] = 'x'
         } else {
             direction = turn(direction);
         }
     }
     print_input(input);
-    count_x(input)
+    count_o(input)
+}
+
+fn check(guard: &mut (i32, i32), input: &mut Vec<Vec<char>>, direction: &mut (i32, i32)) {
+    let saved_guard = guard.clone();
+    let saved_direction = direction.clone();
+
+    *direction = turn(*direction);
+    while !going_outside(*guard, input, *direction) {
+        if can_move(*guard, input, *direction) {
+            *guard = walk(*guard, *direction);
+        } else {
+            *direction = turn(*direction);
+        }
+        if saved_guard == *guard && saved_direction == *direction {
+            let x = saved_guard.0 + saved_direction.0;
+            let y = saved_guard.1 + saved_direction.1;
+            input[y as usize][x as usize] = 'o';
+        }
+    }
 }
 
 fn print_input(input: &mut Vec<Vec<char>>) {
     for row in input.iter() {
-        println!("{:?}", row);
+        for i in row.iter() {
+            print!("{}", i);
+        }
+        println!();
     }
 }
 
-fn count_x(input: &mut Vec<Vec<char>>) -> u32 {
+fn count_o(input: &mut Vec<Vec<char>>) -> u32 {
     input.iter().fold(0, |mut acc, row| {
-        acc += row.iter().filter(|x| **x == 'x').count() as u32;
+        acc += row.iter().filter(|x| **x == 'o').count() as u32;
         acc
     })
 }
@@ -75,7 +97,7 @@ fn turn(direction: (i32, i32)) -> (i32, i32) {
 }
 
 fn get_input() -> Vec<Vec<char>> {
-    let content = include_str!("../../inputs/exemple");
+    let content = include_str!("../../inputs/d6");
     content.lines().fold(Vec::new(), |mut input, row| {
         input.push(row.chars().collect());
         input
