@@ -1,4 +1,4 @@
-with open("../inputs/d8", "r") as f:
+with open("../inputs/exemple", "r") as f:
     content = f.readlines()
 
 ans = 0
@@ -49,74 +49,26 @@ def part1(grid):
     return acc
 
 
-def is_on_line(xa, ya, slope, intercept, vertical_line, x):
-    if vertical_line:
-        return xa == x
-    return ya == xa * slope + intercept
+def in_grid(x, y, grid):
+    return x in range(0, len(grid[0])) and y in range(len(grid))
 
 
-def check2(xa, ya, x, y, grid):
-    vertical_line = False
-    if xa - x == 0:
-        vertical_line = True
-        slope = 0
-    else:
-        slope = (ya - y) / (xa - x)
-    intercept = y - slope * x
-
-    sym = grid[ya][xa]
-    for xa2, row in enumerate(grid):
-        for ya2, _ in enumerate(row):
-            if ya2 == ya and xa2 == xa or xa2 == x and xa2 == x:
-                continue
-            if grid[ya2][xa2] != sym:
-                continue
-            if is_on_line(xa2, ya2, slope, intercept, vertical_line, x):
-                return True
-    return False
-
-
-def is_antinode2(x, y, grid):
-    for ya, row in enumerate(grid):
-        for xa, _ in enumerate(row):
-            if grid[ya][xa] != ".":
-                if check2(xa, ya, x, y, grid):
-                    return True
-
-    return False
-
-
-def is_not_uniq(grid, sym):
-    for row in grid:
-        for s in row:
-            if sym == s:
-                return True
-    return False
-
-
-def count_sym(grid):
-    syms = set()
-    acc = 0
-    for row in grid:
-        for sym in row:
-            if sym != ".":
-                if sym in syms:
-                    acc += 1
-                else:
-                    syms.add(sym)
-
-    return acc + len(syms)
+def get_uniq_pairs(grid):
+    pairs = set()
+    for y, row in enumerate(grid):
+        for x, v in enumerate(row):
+            if v != ".":
+                for y2, row2 in enumerate(grid):
+                    for x2, v2 in enumerate(row2):
+                        if y2 * x2 < y * x:
+                            continue
+                        if v2 != "." and (x, y) != (x2, y2) and v2 == v:
+                            pairs.add(((x, y), (x2, y2)))
+    return pairs
 
 
 def part2(grid):
-    for y, row in enumerate(grid):
-        for x, s in enumerate(row):
-            if is_antinode2(x, y, grid) and s == ".":
-                points.add((x, y))
-
-    counts = count_sym(grid)
-    print(f"{len(points)} + {counts}")
-    return len(points) + counts
+    pairs = get_uniq_pairs(grid)
 
 
 ans = part1(inputs.copy())
@@ -125,5 +77,5 @@ print(points)
 print_grid()
 print("part 1: ", ans)
 print("part 2: ", ans2)
-assert ans == 14
-assert ans2 == 34
+assert ans == 305
+assert ans2 == 1150
