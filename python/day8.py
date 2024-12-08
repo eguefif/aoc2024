@@ -1,4 +1,4 @@
-with open("../inputs/exemple", "r") as f:
+with open("../inputs/d8", "r") as f:
     content = f.readlines()
 
 ans = 0
@@ -69,6 +69,33 @@ def get_uniq_pairs(grid):
 
 def part2(grid):
     pairs = get_uniq_pairs(grid)
+    width = len(grid[0])
+    height = len(grid)
+
+    max_iterations = max(width, height)
+    for pair in pairs:
+        p1 = pair[0]
+        p2 = pair[1]
+
+        points.add(p1)
+        points.add(p2)
+
+        slope = [p2[1] - p1[1], p2[0] - p1[0]]
+
+        for i in range(1, max_iterations):
+            x = p1[0] - i * slope[1]
+            y = p1[1] - i * slope[0]
+            if not in_grid(x, y, grid):
+                break
+            points.add((x, y))
+
+        for i in range(1, max_iterations):
+            x = p1[0] + i * slope[1]
+            y = p1[1] + i * slope[0]
+            if not in_grid(x, y, grid):
+                break
+            points.add((x, y))
+    return len(points)
 
 
 ans = part1(inputs.copy())
