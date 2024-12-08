@@ -64,7 +64,7 @@ fn calculate2(value: &u128, operands: Vec<u128>, result: u128, index: usize) -> 
 }
 
 fn get_input() -> (Vec<u128>, Vec<Vec<u128>>) {
-    let content = include_str!("../inputs/d7");
+    let content = include_str!("../../inputs/d7");
     let mut values: Vec<u128> = vec![];
     let mut ops: Vec<Vec<u128>> = vec![];
     content.lines().for_each(|line| {
