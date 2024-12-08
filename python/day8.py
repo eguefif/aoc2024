@@ -1,4 +1,4 @@
-with open("../inputs/d8", "r") as f:
+with open("../inputs/exemple", "r") as f:
     content = f.readlines()
 
 ans = 0
@@ -69,6 +69,8 @@ def get_uniq_pairs(grid):
 
 def part2(grid):
     pairs = get_uniq_pairs(grid)
+    print(len(pairs))
+    print(pairs)
     width = len(grid[0])
     height = len(grid)
 
