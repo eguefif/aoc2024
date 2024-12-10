@@ -24,9 +24,8 @@ fn remap(disk: &mut Vec<i64>, files: Vec<Index>) {
     let mut spaces = get_spaces(&disk);
 
     for file in files.into_iter().rev() {
-        if let Some(value) = look_for_space(&file, &spaces) {
+        if let Some(value) = look_for_space(&file, &mut spaces) {
             copy(value, disk, &file);
-            spaces = get_spaces(disk);
         }
     }
 }
@@ -39,13 +38,16 @@ fn copy(idx: usize, disk: &mut [i64], file: &Index) {
     }
 }
 
-fn look_for_space(file: &Index, spaces: &[Index]) -> Option<usize> {
+fn look_for_space(file: &Index, spaces: &mut [Index]) -> Option<usize> {
     for space in spaces {
         if space.index >= file.index {
             return None;
         }
         if space.size >= file.size {
-            return Some(space.index);
+            let retval = space.index;
+            space.size -= file.size;
+            space.index += file.size;
+            return Some(retval);
         }
     }
     None
