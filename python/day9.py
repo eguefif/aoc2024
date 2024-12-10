@@ -2,8 +2,6 @@ with open("../inputs/d9") as f:
     content = f.read().strip()
 
 
-content = "2333133121414131402"
-
 line = [int(a) for a in list(content)]
 
 
@@ -58,160 +56,85 @@ def copy(disk, fr, to, n):
         disk[fr - i] = "."
 
 
-class Cursor:
-    def __init__(self, fr, to):
-        self.fr = fr
-        self.to = to
+def get_files_index(index):
+    files = []
+    idx = 0
+    i = 0
+    while i < len(index):
+        file = {
+            "size": index[i],
+            "index": idx,
+        }
+        files.append(file)
+        if i + 2 < len(index):
+            idx += index[i] + index[i + 1]
+            i += 2
+        else:
+            idx += index[i]
+            i += 1
+    return files
 
 
-def is_disk_finishing_with_a_file(index):
-    return len(index) % 2 != 0
+def look_for_space(file, spaces):
+    for space in spaces:
+        if space["index"] >= file["index"]:
+            return -1
+        if space["size"] >= file["size"]:
+            retval = space["index"]
+            return retval
+    return -1
 
 
-def dump(disk, index, disk_c, index_c):
-    print("".join([str(v) for v in disk]))
-    print(
-        " " * (disk_c.to - 1),
-        "|",
-        " " * (disk_c.fr - disk_c.to - 3),
-        "|",
-        " " * 5,
-        disk_c.to,
-        " ",
-        disk_c.fr,
-    )
-    print("".join([str(v) for v in index]))
-    print(
-        " " * (index_c.to - 1),
-        "|",
-        " " * (index_c.fr - index_c.to - 3),
-        "|",
-        " " * 5,
-        index_c.to,
-        " ",
-        index_c.fr,
-    )
-
-    print()
+def copy2(idx, disk, file):
+    for i in range(0, file["size"]):
+        disk[idx + i] = disk[file["index"] + i]
+        disk[file["index"] + i] = "."
 
 
-def init_cursor(disk, index):
-    disk_c = Cursor(0, 0)
+def get_size(disk, i):
+    counter = 0
+    while i < len(disk) and disk[i] == ".":
+        counter += 1
+        i += 1
+    return counter
 
+
+def get_spaces_index(disk):
+    spaces = []
     i = 0
     while i < len(disk):
-        if disk[i] != ".":
-            i += 1
-            continue
-        disk_c.to = i
-        break
-
-    i = len(disk) - 1
-    while i >= 0:
         if disk[i] == ".":
-            i -= 1
-            continue
-        disk_c.fr = i
-        break
-
-    index_c = Cursor(0, len(index) - 1)
-
-    i = len(index) - 1
-    if disk[len(disk) - 1] != ".":
-        index_c.fr = i
-    else:
-        while i > 0:
-            if i % 2 != 0:
-                i -= 1
-                continue
-            if index[i] != 0:
-                index_c.fr = i
-                break
-
-            i -= 1
-
-    for i, v in enumerate(index):
-        if i % 2 == 0:
+            size = get_size(disk, i)
+            space = {
+                "size": size,
+                "index": i,
+            }
+            spaces.append(space)
+            i += size
+        else:
             i += 1
-            continue
-        if v != 0:
-            index_c.to = i
-            break
-        i += 1
-
-        if disk_c.to > disk_c.fr:
-            print("t", disk_c.to)
-            print(disk_c.fr)
-            disk_c.to = -1
-    return disk_c, index_c
+    return spaces
 
 
-def init(disk):
-    index = []
-    counter = 0
-    for i, c in enumerate(disk):
-        if (
-            i + 1 < len(disk)
-            and c != disk[i + 1]
-            and type(c) is type(disk[i + 1])
-            and i != 0
-        ):
-            index.append(counter)
-            index.append(0)
-            counter = 0
-        elif i + 1 < len(disk) and c is not disk[i + 1]:
-            index.append(counter)
-            counter = 0
-        elif i + 1 >= len(disk):
-            index.append(counter)
-            break
-        counter += 1
+def remap2(disk, index):
+    files = get_files_index(index)
+    spaces = get_spaces_index(disk)
 
-    disk_c, index_c = init_cursor(disk, index)
-
-    return index, disk_c, index_c
-
-
-def remap2(disk):
-    print(len(disk))
-    index, disk_c, index_c = init(disk)
-    print(len(index))
-    counter = 0
-
-    while disk_c.to != -1 and counter < 10:
-        while index_c.fr > index_c.to and disk_c.fr > 0:
-            dump(disk, index, disk_c, index_c)
-            if index[index_c.to] >= index[index_c.fr]:
-                n = index[index_c.fr]
-                copy(disk, disk_c.fr, disk_c.to, n)
-                index[index_c.to] -= n
-                disk_c.to += n
-
-                index_c.fr -= 1
-                index[index_c.fr] += n
-                disk_c.fr -= index[index_c.fr]
-                index_c.fr -= 1
-                index.pop()
-            else:
-                n = index[index_c.fr] + index[index_c.fr - 1]
-                index_c.fr -= 2
-                disk_c.fr -= n
-            counter += 1
-
-        index, disk_c, index_c = init(disk)
-
+    for file in files[::-1]:
+        new_spot = look_for_space(file, spaces)
+        if new_spot != -1:
+            copy2(new_spot, disk, file)
+            spaces = get_spaces_index(disk)
     return disk
 
 
 def part2(line):
     disk = put_id(line)
-    disk = remap2(disk)
+    disk = remap2(disk, line)
     return calculate(disk)
 
 
 ans = part1(line)
-ans2 = part2(line)
 print(ans)
+ans2 = part2(line)
 print(ans2)
-assert ans == 1928
-assert ans2 == 2858
