@@ -1,6 +1,0 @@
-when copy is done:
-  change index_to value: subtract n, if 0 move to the next empty space
-  move disk_to by n
-  move index_fr by one: change value, value: sum of both
-  move disk_fr by index_fr
-  move index_fr by 
