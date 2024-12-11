@@ -81,6 +81,8 @@ def look_for_space(file, spaces):
             return -1
         if space["size"] >= file["size"]:
             retval = space["index"]
+            space["index"] += file["size"]
+            space["size"] -= file["size"]
             return retval
     return -1
 
@@ -138,3 +140,4 @@ ans = part1(line)
 print(ans)
 ans2 = part2(line)
 print(ans2)
+assert ans2 == 6237075041489
