@@ -6,15 +6,15 @@ with open("../inputs/exemple", "r") as f:
 def dump(grid, map):
     [print("".join(line)) for line in grid]
 
-    for key, value in map.items():
-        print(f"Key {key}: {value}")
+    for value in map:
+        print(f"Key {value.variety}: {value}")
 
 
 class Plot:
     def __init__(self, variety):
         self.area = 0
         self.perimeter = 0
-        self.variety = None
+        self.variety = variety
 
     def price(self):
         return self.area * self.perimeter
@@ -26,29 +26,57 @@ class Plot:
 
 def get_perimeter(grid, x, y, value):
     counter = 0
-    if x - 1 >= 0 and grid[y][x - 1] == value:
+    if x - 1 >= 0 and value in grid[y][x - 1]:
         counter += 1
-    if y - 1 >= 0 and grid[y - 1][x] == value:
+    if y - 1 >= 0 and value in grid[y - 1][x]:
         counter += 1
-    if x + 1 < len(grid[0]) and grid[y][x + 1] == value:
+    if x + 1 < len(grid[0]) and value in grid[y][x + 1]:
         counter += 1
-    if y + 1 < len(grid) and grid[y + 1][x] == value:
+    if y + 1 < len(grid) and value in grid[y + 1][x]:
         counter += 1
     return 4 - counter
 
 
+def flood(grid, value, plot, x, y):
+    if x < 0 or y < 0 or x >= len(grid[0]) or y >= len(grid):
+        return
+    if grid[y][x] != value:
+        return
+    plot.area += 1
+    plot.perimeter += get_perimeter(grid, x, y, value)
+    grid[y][x] = f"{value}0"
+    flood(grid, value, plot, x + 1, y)
+    flood(grid, value, plot, x - 1, y)
+    flood(grid, value, plot, x, y + 1)
+    flood(grid, value, plot, x, y - 1)
+
+
 def part1(grid):
-    map = {}
+    map = []
     for y, row in enumerate(grid):
         for x, value in enumerate(row):
-            if len(map.keys()) == 0 or value not in map.keys():
-                new_plot = Plot(value)
-                map[value] = new_plot
-            map[value].area += 1
-            map[value].perimeter += get_perimeter(grid, x, y, value)
+            if "0" not in value:
+                plot = Plot(value)
+                flood(grid, value, plot, x, y)
+                map.append(plot)
     acc = 0
     dump(grid, map)
-    for value in map.values():
+    for value in map:
+        acc += value.price()
+
+    return acc
+
+
+def part2(grid):
+    map = []
+    for y, row in enumerate(grid):
+        for x, value in enumerate(row):
+            if "0" not in value:
+                plot = Plot(value)
+                flood(grid, value, plot, x, y)
+                map.append(plot)
+    acc = 0
+    for value in map:
         acc += value.price()
 
     return acc
@@ -57,3 +85,7 @@ def part1(grid):
 ans1 = part1(grid)
 print(ans1)
 assert ans1 == 1930
+
+ans2 = part2(grid)
+print(ans2)
+assert ans2 == 1206
