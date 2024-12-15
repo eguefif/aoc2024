@@ -24,15 +24,8 @@ class Machine:
         y = splits[2].split("=")[1].replace(",", "")
         return (int(x), int(y))
 
-    def get_mina(self):
-        min1 = self.prize[0] / self.a[0]
-        min2 = self.prize[1] / self.a[1]
-        return min(int(min1) + 1, int(min2) + 1)
-
-    def get_minb(self):
-        min1 = self.prize[0] / self.b[0]
-        min2 = self.prize[1] / self.b[1]
-        return min(int(min1) + 1, int(min2) + 1)
+    def get_coord(self):
+        return self.a[0], self.a[1], self.b[0], self.b[1], self.prize[0], self.prize[1]
 
     def __str__(self):
         retval = f"A({self.a[0]}, {self.a[1]}), B({self.b[0], self.b[1]})"
@@ -52,9 +45,11 @@ def dump(machines):
 
 def part1(machines):
     acc = 0
+    epsilon = 0.0001
     for machine in machines:
-        acc += get_cost(machine)
-    return acc
+        ax, ay, bx, by, px, py = machine.get_coord()
+        b= (ax * py - ay * py) / (ax * by - ay * bx)
+        a = 
 
 
 ans1 = part1(machines)
