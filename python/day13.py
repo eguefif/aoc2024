@@ -24,8 +24,16 @@ class Machine:
         y = splits[2].split("=")[1].replace(",", "")
         return (int(x), int(y))
 
-    def get_coord(self):
-        return self.a[0], self.a[1], self.b[0], self.b[1], self.prize[0], self.prize[1]
+    def solve(self):
+        d = self.a[0] * self.b[1] - self.a[1] * self.b[0]
+        a = self.prize[0] * self.b[1] - self.prize[1] * self.b[0]
+        b = self.prize[1] * self.a[0] - self.prize[0] * self.a[1]
+        if a % d == 0 and b % d == 0:
+            return 3 * (a / d) + b / d
+        return 0
+
+    def rescale(self):
+        self.prize = self.prize[0] + 10000000000000, self.prize[1] + 10000000000000
 
     def __str__(self):
         retval = f"A({self.a[0]}, {self.a[1]}), B({self.b[0], self.b[1]})"
@@ -45,17 +53,21 @@ def dump(machines):
 
 def part1(machines):
     acc = 0
-    epsilon = 0.0001
     for machine in machines:
-        ax, ay, bx, by, px, py = machine.get_coord()
-        b= (ax * py - ay * py) / (ax * by - ay * bx)
-        a = 
+        acc += machine.solve()
+    return acc
+
+
+def part2(machines):
+    acc = 0
+    for machine in machines:
+        machine.rescale()
+        acc += machine.solve()
+    return acc
 
 
 ans1 = part1(machines)
+ans2 = part2(machines)
 
 print(ans1)
-
-# assert ans1 == 480
-assert ans1 == 26299
-# 5466
+print(ans2)
