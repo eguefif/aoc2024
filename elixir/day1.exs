@@ -1,16 +1,29 @@
-content = File.read!("../input/day1.txt")
-lines = String.split(content, "\n")
+defmodule Day1 do
+  def parse_input(input) do
+    input
+      |> Stream.map(fn line -> line |> String.split() |> Enum.map(&String.to_integer/1) end)
+      |> Stream.map(&List.to_tuple/1)
+      |> Enum.unzip()
+  end
 
-l1 = for line <- lines, do: Enum.at(String.split(line), 0)
-l2 = for line <- lines, do: Enum.at(String.split(line), 1)
+  def part1(l1, l2) do
+    Enum.zip(Enum.sort(l1), Enum.sort(l2))
+      |> Enum.map(fn {a, b} -> abs(a - b) end)
+      |> Enum.sum()
+  end
 
-l1 = Enum.filter(l1, &(&1 != nil))
-l2 = Enum.filter(l2, &(&1 != nil))
+  def part2(l1, l2) do
+    frequencies = Enum.frequencies(l2)
 
-l1 = Enum.sort(l1)
-l2 = Enum.sort(l2)
+    l1 
+      |> Enum.map(fn x -> x * Map.get(frequencies, x, 0) end)
+      |> Enum.sum()
+  end
+end
 
-l = for i <- 0..(length(l1) - 1), do: String.to_integer(Enum.at(l1, i)) - String.to_integer(Enum.at(l2, i))
+{l1, l2} = "../input/day1.txt" 
+  |> File.stream!()
+  |> Day1.parse_input()
 
-l = for i <- l, do: abs(i)
-IO.puts Enum.reduce(l, 0, fn item, acc -> item + acc end)
+IO.puts "Part1: #{Day1.part1(l1, l2)}"
+IO.puts "Part2: #{Day1.part2(l1, l2)}"
